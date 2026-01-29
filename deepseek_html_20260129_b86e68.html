@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Flow - Sistema de Puntuación Profesional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill="white" opacity="0.05" d="M0 0h20v20H0V0zm10 10a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg>');
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            position: relative;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+        }
+
+        .header-icon {
+            font-size: 2em;
+            margin-bottom: 15px;
+            display: block;
+            opacity: 0.8;
+        }
+
+        .login-section, .scoring-section, .admin-section {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 1em;
+            transition: var(--transition);
+            background: white;
+            color: var(--dark);
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.25);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--gray) 0%, #475569 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #34d399 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #f87171 100%);
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 20px 25px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .user-info span {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+
+        .criteria-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .criteria-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .criteria-table th:first-child {
+            border-top-left-radius: var(--radius);
+        }
+
+        .criteria-table th:last-child {
+            border-top-right-radius: var(--radius);
+        }
+
+        .criteria-table td {
+            padding: 16px 15px;
+            border-bottom: 1px solid var(--gray-light);
+            vertical-align: middle;
+        }
+
+        .criteria-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .criteria-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .criteria-name {
+            font-weight: 700;
+            color: var(--dark);
+            background: #f1f5f9;
+            font-size: 1.1em;
+        }
+
+        .subcriteria-name {
+            padding-left: 25px;
+            color: var(--gray);
+            position: relative;
+        }
+
+        .subcriteria-name::before {
+            content: '•';
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 10px;
+        }
+
+        .score-input {
+            width: 80px;
+            padding: 10px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 1em;
+            font-weight: 700;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .score-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .total-row {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-weight: 800;
+            font-size: 1.2em;
+        }
+
+        .total-row td {
+            padding: 25px 15px;
+            border-top: 3px solid var(--primary);
+        }
+
+        .total-score {
+            color: var(--primary);
+            font-size: 1.5em;
+            font-weight: 800;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-left: 5px solid var(--success);
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #7f1d1d;
+            border-left: 5px solid var(--danger);
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border-left: 5px solid var(--primary);
+        }
+
+        .scores-history {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .scores-history h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-item {
+            padding: 15px;
+            background: white;
+            margin-bottom: 12px;
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .score-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Estilos para el panel de administrador */
+        .admin-panel {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .category-section {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .category-section:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .category-title {
+            font-size: 1.5em;
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-count {
+            background: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .results-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .results-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 800;
+            color: white;
+            font-size: 1.1em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #C0C0C0, #949494);
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #CD7F32, #a3692a);
+        }
+
+        .rank-other {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        }
+
+        .score-cell {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.2em;
+        }
+
+        .judge-scores {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .judge-score {
+            background: var(--gray-light);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            border-left: 5px solid var(--primary);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            font-size: 2em;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .empty-state {
+            padding: 50px 20px;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: var(--gray);
+        }
+
+        .empty-state p {
+            font-size: 1em;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(79, 70, 229, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .login-section, .scoring-section, .admin-section {
+                padding: 25px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+
+            .score-input {
+                width: 70px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .category-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .results-table {
+                font-size: 0.85em;
+            }
+
+            .judge-scores {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: var(--radius);
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .login-section, .scoring-section, .admin-section {
+                padding: 20px;
+            }
+
+            .score-input {
+                width: 60px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-value {
+                font-size: 1.8em;
+            }
+        }
+
+        /* Mejoras de scroll */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">🏆</div>
+            <h1>TOP FLOW</h1>
+            <p>Sistema de Puntuación Automatizado</p>
+        </div>
+
+        <!-- Sección de Login -->
+        <div id="loginSection" class="login-section">
+            <h2 class="section-title">Inicio de Sesión</h2>
+            <div class="form-group">
+                <label for="userTypeSelect"><i class="fas fa-user-tag"></i> Tipo de usuario:</label>
+                <select id="userTypeSelect" onchange="updateLoginOptions()">
+                    <option value="">-- Seleccione --</option>
+                    <option value="judge">Jurado</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+            
+            <div id="judgeLogin" class="hidden">
+                <div class="form-group">
+                    <label for="judgeSelect"><i class="fas fa-user-graduate"></i> Seleccione su número de jurado:</label>
+                    <select id="judgeSelect">
+                        <option value="">-- Seleccione --</option>
+                        <option value="1">Jurado 1</option>
+                        <option value="2">Jurado 2</option>
+                        <option value="3">Jurado 3</option>
+                        <option value="4">Jurado 4</option>
+                        <option value="5">Jurado 5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="adminLogin" class="hidden">
+                <div class="form-group">
+                    <label for="adminPassword"><i class="fas fa-key"></i> Contraseña de administrador:</label>
+                    <input type="password" id="adminPassword" placeholder="Ingrese la contraseña">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="login()">
+                    <i class="fas fa-sign-in-alt"></i> Ingresar al Sistema
+                </button>
+            </div>
+        </div>
+
+        <!-- Sección de Puntuación (Jurados) -->
+        <div id="scoringSection" class="scoring-section hidden">
+            <div class="user-info">
+                <span id="judgeInfo"><i class="fas fa-user-graduate"></i> Jurado</span>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+
+            <div id="alertBox"></div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Selección de Grupo</div>
+                </div>
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label for="divisionSelect"><i class="fas fa-layer-group"></i> División / Categoría:</label>
+                        <select id="divisionSelect" onchange="updateGroupsList()">
+                            <option value="">-- Seleccione División --</option>
+                            <option value="pre-junior">Pre-Junior</option>
+                            <option value="junior">Junior</option>
+                            <option value="team">Team</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="groupSelect"><i class="fas fa-users"></i> Grupo a Evaluar:</label>
+                        <select id="groupSelect">
+                            <option value="">-- Primero seleccione una división --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Tabla de Evaluación</div>
+                    <div class="total-score" id="totalScore">0</div>
+                </div>
+
+                <table class="criteria-table">
+                    <thead>
+                        <tr>
+                            <th>Criterio / Subcriterio</th>
+                            <th style="width: 150px; text-align: center;">Puntuación</th>
+                            <th style="width: 100px; text-align: center;">Máx</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Criterio 1: Performance -->
+                        <tr>
+                            <td colspan="3" class="criteria-name">1. PERFORMANCE (20 puntos)</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Expresividad escénica</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="perf_1" min="0" max="5" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">5</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Expresión Facial</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="perf_2" min="0" max="5" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">5</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Energía</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="perf_3" min="0" max="5" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">5</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Presencia Escénica</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="perf_4" min="0" max="5" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">5</td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding-left: 40px; font-weight: 600;">Subtotal Performance:</td>
+                            <td style="text-align: center; font-weight: 700; color: var(--primary);"><span id="subtotal_perf">0</span></td>
+                            <td style="text-align: center; font-weight: 700;">20</td>
+                        </tr>
+
+                        <!-- Criterio 2: Técnica -->
+                        <tr>
+                            <td colspan="3" class="criteria-name">2. TÉCNICA (20 puntos)</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Control Corporal</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="tec_1" min="0" max="4" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">4</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Fundamentos técnicos</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="tec_2" min="0" max="4" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">4</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Ejecución</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="tec_3" min="0" max="3" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">3</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Musicalidad</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="tec_4" min="0" max="3" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">3</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Tiempo / Sincronización</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="tec_5" min="0" max="3" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">3</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Limpieza de la rutina</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="tec_6" min="0" max="3" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">3</td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding-left: 40px; font-weight: 600;">Subtotal Técnica:</td>
+                            <td style="text-align: center; font-weight: 700; color: var(--primary);"><span id="subtotal_tec">0</span></td>
+                            <td style="text-align: center; font-weight: 700;">20</td>
+                        </tr>
+
+                        <!-- Criterio 3: Coreografía -->
+                        <tr>
+                            <td colspan="3" class="criteria-name">3. COREOGRAFÍA (20 puntos)</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Originalidad</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cor_1" min="0" max="4" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">4</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Musicalidad</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cor_2" min="0" max="4" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">4</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Variedad</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cor_3" min="0" max="3" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">3</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Creatividad</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cor_4" min="0" max="3" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">3</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Concepto</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cor_5" min="0" max="3" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">3</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Dinámica</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cor_6" min="0" max="3" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">3</td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding-left: 40px; font-weight: 600;">Subtotal Coreografía:</td>
+                            <td style="text-align: center; font-weight: 700; color: var(--primary);"><span id="subtotal_cor">0</span></td>
+                            <td style="text-align: center; font-weight: 700;">20</td>
+                        </tr>
+
+                        <!-- Criterio 4: Creatividad -->
+                        <tr>
+                            <td colspan="3" class="criteria-name">4. CREATIVIDAD (20 puntos)</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Puesta en Escena/Distribución</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cre_1" min="0" max="5" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">5</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Tema</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cre_2" min="0" max="5" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">5</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Selección Musical</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cre_3" min="0" max="5" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">5</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Transiciones</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="cre_4" min="0" max="5" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">5</td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding-left: 40px; font-weight: 600;">Subtotal Creatividad:</td>
+                            <td style="text-align: center; font-weight: 700; color: var(--primary);"><span id="subtotal_cre">0</span></td>
+                            <td style="text-align: center; font-weight: 700;">20</td>
+                        </tr>
+
+                        <!-- Criterio 5: Presentación -->
+                        <tr>
+                            <td colspan="3" class="criteria-name">5. PRESENTACIÓN (20 puntos)</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Vestuario</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="pre_1" min="0" max="7" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">7</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Peinado/Maquillaje</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="pre_2" min="0" max="7" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">7</td>
+                        </tr>
+                        <tr>
+                            <td class="subcriteria-name">Presencia Escénica</td>
+                            <td style="text-align: center;"><input type="number" class="score-input" id="pre_3" min="0" max="6" value="0" onchange="calculateTotals()"></td>
+                            <td style="text-align: center;">6</td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding-left: 40px; font-weight: 600;">Subtotal Presentación:</td>
+                            <td style="text-align: center; font-weight: 700; color: var(--primary);"><span id="subtotal_pre">0</span></td>
+                            <td style="text-align: center; font-weight: 700;">20</td>
+                        </tr>
+
+                        <!-- Total Final -->
+                        <tr class="total-row">
+                            <td>PUNTUACIÓN TOTAL:</td>
+                            <td style="text-align: center;"><span class="total-score" id="totalScore">0</span></td>
+                            <td style="text-align: center; font-weight: 700;">100</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn btn-success" onclick="submitScore()">
+                    <i class="fas fa-paper-plane"></i> Enviar Puntuación
+                </button>
+                <button class="btn btn-secondary" onclick="resetForm()">
+                    <i class="fas fa-redo"></i> Limpiar Formulario
+                </button>
+            </div>
+
+            <div class="scores-history" id="scoresHistory">
+                <h3><i class="fas fa-chart-bar"></i> Puntuaciones Registradas</h3>
+                <div id="historyList"></div>
+            </div>
+        </div>
+
+        <!-- Sección de Administrador -->
+        <div id="adminSection" class="admin-section hidden">
+            <div class="user-info">
+                <div>
+                    <span class="admin-badge"><i class="fas fa-crown"></i> ADMINISTRADOR</span>
+                    <span id="adminInfo" style="margin-left: 15px;">Panel de Control</span>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+
+            <div id="adminAlertBox"></div>
+
+            <!-- Estadísticas Generales -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value" id="totalGroups">0</div>
+                    <div class="stat-label">Grupos Evaluados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    <div class="stat-value" id="totalScores">0</div>
+                    <div class="stat-label">Puntuaciones Registradas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-value" id="avgScore">0.0</div>
+                    <div class="stat-label">Promedio General</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="stat-value" id="highestScore">0.0</div>
+                    <div class="stat-label">Puntaje Más Alto</div>
+                </div>
+            </div>
+
+            <!-- Nota explicativa -->
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Sistema de Promedio Ajustado por Criterio:</strong> 
+                    <br>Para cada criterio (Performance, Técnica, Coreografía, Creatividad, Presentación), cuando hay 4 o más jurados, se eliminan automáticamente el puntaje más alto y el más bajo de ese criterio específico.
+                    <br>El puntaje final del grupo es la suma de los promedios ajustados de cada criterio.
+                    <br>Los puntajes excluidos se muestran tachados con indicadores ↓ (más bajo) y ↑ (más alto).
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filter-section">
+                <h3 style="margin-bottom: 15px; color: var(--primary);"><i class="fas fa-filter"></i> Filtros</h3>
+                <div class="filter-grid">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="adminCategoryFilter"><i class="fas fa-layer-group"></i> Categoría:</label>
+                        <select id="adminCategoryFilter" onchange="renderAdminResults()">
+                            <option value="all">Todas las categorías</option>
+                            <option value="pre-junior">Pre-Junior</option>
+                            <option value="junior">Junior</option>
+                            <option value="team">Team</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="adminSortBy"><i class="fas fa-sort-amount-down"></i> Ordenar por:</label>
+                        <select id="adminSortBy" onchange="renderAdminResults()">
+                            <option value="score-desc">Puntaje (Mayor a Menor)</option>
+                            <option value="score-asc">Puntaje (Menor a Mayor)</option>
+                            <option value="name-asc">Nombre (A-Z)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados por Categoría -->
+            <div id="adminResults"></div>
+
+            <!-- Botón para exportar datos -->
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-admin" onclick="exportToCSV()">
+                    <i class="fas fa-file-export"></i> Exportar Resultados (CSV)
+                </button>
+                <button class="btn btn-danger" onclick="clearAllData()">
+                    <i class="fas fa-trash"></i> Limpiar Todos los Datos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = 'topflow2024'; // Cambiar esta contraseña según necesites
+
+        const groups = {
+            'pre-junior': ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D'],
+            'junior': ['Grupo E', 'Grupo F', 'Grupo G', 'Grupo H', 'Grupo I'],
+            'team': ['Grupo J', 'Grupo K', 'Grupo L', 'Grupo M', 'Grupo N', 'Grupo O']
+        };
+
+        const categoryNames = {
+            'pre-junior': 'PRE-JUNIOR',
+            'junior': 'JUNIOR',
+            'team': 'TEAM'
+        };
+
+        let currentJudge = null;
+        let isAdmin = false;
+        let allScores = {};
+
+        function updateLoginOptions() {
+            const userType = document.getElementById('userTypeSelect').value;
+            const judgeLogin = document.getElementById('judgeLogin');
+            const adminLogin = document.getElementById('adminLogin');
+
+            if (userType === 'judge') {
+                judgeLogin.classList.remove('hidden');
+                adminLogin.classList.add('hidden');
+            } else if (userType === 'admin') {
+                judgeLogin.classList.add('hidden');
+                adminLogin.classList.remove('hidden');
+            } else {
+                judgeLogin.classList.add('hidden');
+                adminLogin.classList.add('hidden');
+            }
+        }
+
+        function login() {
+            const userType = document.getElementById('userTypeSelect').value;
+            
+            if (!userType) {
+                showAlert('Por favor seleccione un tipo de usuario', 'error');
+                return;
+            }
+
+            if (userType === 'judge') {
+                const judgeNum = document.getElementById('judgeSelect').value;
+                if (!judgeNum) {
+                    showAlert('Por favor seleccione un número de jurado', 'error');
+                    return;
+                }
+                currentJudge = judgeNum;
+                isAdmin = false;
+                document.getElementById('judgeInfo').innerHTML = `<i class="fas fa-user-graduate"></i> Jurado ${judgeNum}`;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('scoringSection').classList.remove('hidden');
+                loadScoresFromStorage();
+                displayHistory();
+            } else if (userType === 'admin') {
+                const password = document.getElementById('adminPassword').value;
+                if (password !== ADMIN_PASSWORD) {
+                    showAlert('Contraseña incorrecta', 'error');
+                    return;
+                }
+                isAdmin = true;
+                currentJudge = null;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('adminSection').classList.remove('hidden');
+                loadScoresFromStorage();
+                renderAdminResults();
+            }
+        }
+
+        function logout() {
+            currentJudge = null;
+            isAdmin = false;
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('scoringSection').classList.add('hidden');
+            document.getElementById('adminSection').classList.add('hidden');
+            document.getElementById('userTypeSelect').value = '';
+            document.getElementById('judgeSelect').value = '';
+            document.getElementById('adminPassword').value = '';
+            updateLoginOptions();
+            resetForm();
+        }
+
+        function updateGroupsList() {
+            const division = document.getElementById('divisionSelect').value;
+            const groupSelect = document.getElementById('groupSelect');
+            groupSelect.innerHTML = '<option value="">-- Seleccione un grupo --</option>';
+            
+            if (division && groups[division]) {
+                groups[division].forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group;
+                    option.textContent = group;
+                    groupSelect.appendChild(option);
+                });
+            }
+        }
+
+        function calculateTotals() {
+            const perfTotal = ['perf_1', 'perf_2', 'perf_3', 'perf_4']
+                .reduce((sum, id) => sum + (parseFloat(document.getElementById(id).value) || 0), 0);
+            document.getElementById('subtotal_perf').textContent = perfTotal.toFixed(1);
+
+            const tecTotal = ['tec_1', 'tec_2', 'tec_3', 'tec_4', 'tec_5', 'tec_6']
+                .reduce((sum, id) => sum + (parseFloat(document.getElementById(id).value) || 0), 0);
+            document.getElementById('subtotal_tec').textContent = tecTotal.toFixed(1);
+
+            const corTotal = ['cor_1', 'cor_2', 'cor_3', 'cor_4', 'cor_5', 'cor_6']
+                .reduce((sum, id) => sum + (parseFloat(document.getElementById(id).value) || 0), 0);
+            document.getElementById('subtotal_cor').textContent = corTotal.toFixed(1);
+
+            const creTotal = ['cre_1', 'cre_2', 'cre_3', 'cre_4']
+                .reduce((sum, id) => sum + (parseFloat(document.getElementById(id).value) || 0), 0);
+            document.getElementById('subtotal_cre').textContent = creTotal.toFixed(1);
+
+            const preTotal = ['pre_1', 'pre_2', 'pre_3']
+                .reduce((sum, id) => sum + (parseFloat(document.getElementById(id).value) || 0), 0);
+            document.getElementById('subtotal_pre').textContent = preTotal.toFixed(1);
+
+            const total = perfTotal + tecTotal + corTotal + creTotal + preTotal;
+            document.getElementById('totalScore').textContent = total.toFixed(1);
+        }
+
+        function submitScore() {
+            const division = document.getElementById('divisionSelect').value;
+            const group = document.getElementById('groupSelect').value;
+            const total = parseFloat(document.getElementById('totalScore').textContent);
+
+            if (!division) {
+                showAlert('Por favor seleccione una división', 'error');
+                return;
+            }
+            if (!group) {
+                showAlert('Por favor seleccione un grupo', 'error');
+                return;
+            }
+            if (total === 0) {
+                showAlert('Por favor ingrese las puntuaciones', 'error');
+                return;
+            }
+
+            const scoreKey = `${division}_${group}`;
+            if (!allScores[scoreKey]) {
+                allScores[scoreKey] = {};
+            }
+            
+            // Guardar puntajes detallados por criterio
+            allScores[scoreKey][`judge${currentJudge}`] = {
+                total: total,
+                performance: parseFloat(document.getElementById('subtotal_perf').textContent),
+                technique: parseFloat(document.getElementById('subtotal_tec').textContent),
+                choreography: parseFloat(document.getElementById('subtotal_cor').textContent),
+                creativity: parseFloat(document.getElementById('subtotal_cre').textContent),
+                presentation: parseFloat(document.getElementById('subtotal_pre').textContent)
+            };
+
+            saveScoresToStorage();
+            showAlert(`✅ Puntuación guardada: ${total} puntos para ${group} (${division})`, 'success');
+            displayHistory();
+            resetForm();
+        }
+
+        function resetForm() {
+            const inputs = document.querySelectorAll('.score-input');
+            inputs.forEach(input => input.value = 0);
+            calculateTotals();
+            document.getElementById('divisionSelect').value = '';
+            document.getElementById('groupSelect').value = '';
+            updateGroupsList();
+        }
+
+        function displayHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+
+            let hasScores = false;
+            
+            for (const key in allScores) {
+                const [division, group] = key.split('_');
+                const scores = allScores[key];
+                const judgeScore = scores[`judge${currentJudge}`];
+                
+                if (judgeScore) {
+                    hasScores = true;
+                    const scoreValue = typeof judgeScore === 'object' ? judgeScore.total : judgeScore;
+                    const scoreItem = document.createElement('div');
+                    scoreItem.className = 'score-item';
+                    scoreItem.innerHTML = `
+                        <div>
+                            <strong>${group}</strong> - ${categoryNames[division]} 
+                        </div>
+                        <span style="color: var(--primary); font-weight: 700; font-size: 1.1em;">${scoreValue.toFixed(1)} pts</span>
+                    `;
+                    historyList.appendChild(scoreItem);
+                }
+            }
+
+            if (!hasScores) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>No hay puntuaciones registradas</h3>
+                        <p>Comience evaluando algún grupo para ver el historial aquí.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function calculateAdjustedAverage(scores) {
+            // Si hay 3 o menos puntuaciones, usar todas
+            if (scores.length <= 3) {
+                return scores.length > 0 
+                    ? scores.reduce((a, b) => a + b, 0) / scores.length 
+                    : 0;
+            }
+            
+            // Si hay 4 o más, eliminar la más alta y la más baja
+            const sortedScores = [...scores].sort((a, b) => a - b);
+            const trimmedScores = sortedScores.slice(1, -1); // Elimina primera (menor) y última (mayor)
+            
+            return trimmedScores.length > 0 
+                ? trimmedScores.reduce((a, b) => a + b, 0) / trimmedScores.length 
+                : 0;
+        }
+
+        function calculateAdjustedTotalByCriteria(scoresData) {
+            const criteria = ['performance', 'technique', 'choreography', 'creativity', 'presentation'];
+            let totalAdjusted = 0;
+
+            criteria.forEach(criterion => {
+                const criterionScores = [];
+                
+                // Extraer puntajes de cada jurado para este criterio
+                Object.values(scoresData).forEach(judgeData => {
+                    if (typeof judgeData === 'object' && judgeData[criterion] !== undefined) {
+                        criterionScores.push(judgeData[criterion]);
+                    } else if (typeof judgeData === 'number') {
+                        // Compatibilidad con datos antiguos
+                        return;
+                    }
+                });
+
+                if (criterionScores.length > 0) {
+                    // Aplicar promedio ajustado a este criterio
+                    const adjustedAvg = calculateAdjustedAverage(criterionScores);
+                    totalAdjusted += adjustedAvg;
+                }
+            });
+
+            return totalAdjusted;
+        }
+
+        function getExcludedScoresForCriterion(scoresData, criterion) {
+            const criterionScores = [];
+            
+            Object.entries(scoresData).forEach(([judge, judgeData]) => {
+                if (typeof judgeData === 'object' && judgeData[criterion] !== undefined) {
+                    criterionScores.push({
+                        judge: judge,
+                        score: judgeData[criterion]
+                    });
+                }
+            });
+
+            if (criterionScores.length < 4) {
+                return { minScore: null, maxScore: null };
+            }
+
+            const sortedByScore = [...criterionScores].sort((a, b) => a.score - b.score);
+            return {
+                minScore: sortedByScore[0],
+                maxScore: sortedByScore[sortedByScore.length - 1]
+            };
+        }
+
+        function renderAdminResults() {
+            const categoryFilter = document.getElementById('adminCategoryFilter').value;
+            const sortBy = document.getElementById('adminSortBy').value;
+            const resultsContainer = document.getElementById('adminResults');
+            
+            // Calcular estadísticas
+            calculateStats();
+
+            // Preparar datos por categoría
+            const categorizedResults = {};
+            
+            for (const key in allScores) {
+                const [division, group] = key.split('_');
+                
+                if (categoryFilter !== 'all' && division !== categoryFilter) {
+                    continue;
+                }
+
+                if (!categorizedResults[division]) {
+                    categorizedResults[division] = [];
+                }
+
+                const scores = allScores[key];
+                
+                // Verificar si tiene datos nuevos (por criterio) o antiguos (solo total)
+                const hasDetailedScores = Object.values(scores).some(s => typeof s === 'object');
+                
+                let average;
+                if (hasDetailedScores) {
+                    average = calculateAdjustedTotalByCriteria(scores);
+                } else {
+                    // Compatibilidad con datos antiguos
+                    const judgeScores = Object.values(scores);
+                    average = calculateAdjustedAverage(judgeScores);
+                }
+
+                categorizedResults[division].push({
+                    group,
+                    division,
+                    average,
+                    scores,
+                    hasDetailedScores
+                });
+            }
+
+            // Ordenar resultados
+            for (const division in categorizedResults) {
+                categorizedResults[division].sort((a, b) => {
+                    if (sortBy === 'score-desc') return b.average - a.average;
+                    if (sortBy === 'score-asc') return a.average - b.average;
+                    if (sortBy === 'name-asc') return a.group.localeCompare(b.group);
+                    return 0;
+                });
+            }
+
+            // Renderizar resultados
+            resultsContainer.innerHTML = '';
+
+            const orderedCategories = ['pre-junior', 'junior', 'team'];
+            
+            for (const division of orderedCategories) {
+                if (!categorizedResults[division] || categorizedResults[division].length === 0) {
+                    continue;
+                }
+
+                const categorySection = document.createElement('div');
+                categorySection.className = 'category-section';
+                
+                const results = categorizedResults[division];
+                
+                categorySection.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-title">
+                            <i class="fas fa-tag"></i> ${categoryNames[division]}
+                        </div>
+                        <div class="category-count">${results.length} ${results.length === 1 ? 'grupo' : 'grupos'}</div>
+                    </div>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px; text-align: center;">Pos.</th>
+                                <th>Grupo</th>
+                                <th style="text-align: center;">Puntaje Final</th>
+                                <th>Detalles por Criterio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${results.map((result, index) => {
+                                const rank = index + 1;
+                                const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+                                
+                                // Generar detalles por criterio
+                                let criteriaDetails = '';
+                                
+                                if (result.hasDetailedScores) {
+                                    const criteriaNames = {
+                                        performance: 'Performance',
+                                        technique: 'Técnica',
+                                        choreography: 'Coreografía',
+                                        creativity: 'Creatividad',
+                                        presentation: 'Presentación'
+                                    };
+
+                                    criteriaDetails = '<div style="display: grid; gap: 10px;">';
+                                    
+                                    Object.entries(criteriaNames).forEach(([criterion, label]) => {
+                                        const excluded = getExcludedScoresForCriterion(result.scores, criterion);
+                                        const criterionScores = [];
+                                        
+                                        Object.entries(result.scores).forEach(([judge, data]) => {
+                                            if (typeof data === 'object' && data[criterion] !== undefined) {
+                                                criterionScores.push({
+                                                    judge: judge,
+                                                    score: data[criterion]
+                                                });
+                                            }
+                                        });
+
+                                        const adjustedAvg = calculateAdjustedAverage(criterionScores.map(s => s.score));
+
+                                        criteriaDetails += `
+                                            <div style="background: #f8f9fa; padding: 8px; border-radius: 5px; border-left: 3px solid var(--primary);">
+                                                <strong style="color: var(--primary);">${label}:</strong> 
+                                                <span style="font-weight: 600; color: var(--dark);">${adjustedAvg.toFixed(2)}</span>
+                                                <div style="margin-top: 5px; font-size: 0.85em;">
+                                                    ${criterionScores.map(({judge, score}) => {
+                                                        const isMin = excluded.minScore && judge === excluded.minScore.judge && score === excluded.minScore.score;
+                                                        const isMax = excluded.maxScore && judge === excluded.maxScore.judge && score === excluded.maxScore.score;
+                                                        const isExcluded = isMin || isMax;
+                                                        
+                                                        return `<span style="display: inline-block; margin-right: 8px; ${isExcluded ? 'text-decoration: line-through; opacity: 0.5;' : ''}">${judge.replace('judge', 'J')}: ${score.toFixed(1)}${isMin ? '↓' : isMax ? '↑' : ''}</span>`;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                    
+                                    criteriaDetails += '</div>';
+                                } else {
+                                    // Mostrar datos antiguos (sin detalle por criterio)
+                                    const scoresArray = Object.entries(result.scores).map(([judge, score]) => ({
+                                        judge,
+                                        score: typeof score === 'object' ? score.total : score
+                                    }));
+                                    
+                                    let minScore = null;
+                                    let maxScore = null;
+                                    
+                                    if (scoresArray.length >= 4) {
+                                        const sortedByScore = [...scoresArray].sort((a, b) => a.score - b.score);
+                                        minScore = sortedByScore[0];
+                                        maxScore = sortedByScore[sortedByScore.length - 1];
+                                    }
+                                    
+                                    criteriaDetails = `
+                                        <div class="judge-scores">
+                                            ${scoresArray.map(({judge, score}) => {
+                                                const isMin = minScore && judge === minScore.judge && score === minScore.score;
+                                                const isMax = maxScore && judge === maxScore.judge && score === maxScore.score;
+                                                const isExcluded = isMin || isMax;
+                                                
+                                                return `<span class="judge-score" style="${isExcluded ? 'text-decoration: line-through; opacity: 0.5; background: #ffebee;' : ''}">${judge.replace('judge', 'J')}: ${score.toFixed(1)}${isMin ? ' ↓' : isMax ? ' ↑' : ''}</span>`;
+                                            }).join('')}
+                                        </div>
+                                        ${scoresArray.length >= 4 ? '<div style="font-size: 0.75em; color: #999; margin-top: 5px;">↓ Puntaje más bajo (excluido) | ↑ Puntaje más alto (excluido)</div>' : ''}
+                                        <div style="font-size: 0.8em; color: #999; margin-top: 8px; font-style: italic;">Datos sin detalle por criterio (formato antiguo)</div>
+                                    `;
+                                }
+                                
+                                return `
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <span class="rank-badge ${rankClass}">${rank}</span>
+                                        </td>
+                                        <td style="font-weight: 600;">${result.group}</td>
+                                        <td style="text-align: center;" class="score-cell">
+                                            ${result.average.toFixed(2)}
+                                            ${result.hasDetailedScores ? '<br><span style="font-size: 0.8em; color: #999;">(por criterio)</span>' : '<br><span style="font-size: 0.8em; color: #999;">(total ajustado)</span>'}
+                                        </td>
+                                        <td>
+                                            ${criteriaDetails}
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                resultsContainer.appendChild(categorySection);
+            }
+
+            if (resultsContainer.children.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="category-section">
+                        <div class="empty-state">
+                            <i class="fas fa-database"></i>
+                            <h3>No hay datos disponibles</h3>
+                            <p>No se encontraron resultados para los filtros aplicados.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function calculateStats() {
+            let totalGroups = 0;
+            let totalScoresCount = 0;
+            let allAdjustedAverages = [];
+            let highest = 0;
+
+            for (const key in allScores) {
+                totalGroups++;
+                const scores = allScores[key];
+                const scoresArray = Object.values(scores);
+                totalScoresCount += scoresArray.length;
+                
+                // Verificar si tiene datos detallados
+                const hasDetailedScores = scoresArray.some(s => typeof s === 'object');
+                
+                let groupAverage;
+                if (hasDetailedScores) {
+                    groupAverage = calculateAdjustedTotalByCriteria(scores);
+                } else {
+                    groupAverage = calculateAdjustedAverage(scoresArray);
+                }
+                
+                allAdjustedAverages.push(groupAverage);
+                if (groupAverage > highest) highest = groupAverage;
+            }
+
+            const avgScore = allAdjustedAverages.length > 0 
+                ? allAdjustedAverages.reduce((a, b) => a + b, 0) / allAdjustedAverages.length 
+                : 0;
+
+            document.getElementById('totalGroups').textContent = totalGroups;
+            document.getElementById('totalScores').textContent = totalScoresCount;
+            document.getElementById('avgScore').textContent = avgScore.toFixed(2);
+            document.getElementById('highestScore').textContent = highest.toFixed(2);
+        }
+
+        function exportToCSV() {
+            let csv = 'Categoría,Grupo,Puntaje Final Ajustado,Performance,Técnica,Coreografía,Creatividad,Presentación,Número de Jurados\n';
+
+            // Datos
+            for (const key in allScores) {
+                const [division, group] = key.split('_');
+                const scores = allScores[key];
+                const scoresArray = Object.values(scores);
+                
+                // Verificar si tiene datos detallados
+                const hasDetailedScores = scoresArray.some(s => typeof s === 'object');
+                
+                let finalScore;
+                let perfScore = '', techScore = '', chorScore = '', creaScore = '', presScore = '';
+                
+                if (hasDetailedScores) {
+                    finalScore = calculateAdjustedTotalByCriteria(scores);
+                    
+                    // Calcular promedios por criterio
+                    const criteria = ['performance', 'technique', 'choreography', 'creativity', 'presentation'];
+                    const criteriaScores = [null, null, null, null, null];
+                    
+                    criteria.forEach((criterion, idx) => {
+                        const criterionScores = [];
+                        Object.values(scores).forEach(judgeData => {
+                            if (typeof judgeData === 'object' && judgeData[criterion] !== undefined) {
+                                criterionScores.push(judgeData[criterion]);
+                            }
+                        });
+                        if (criterionScores.length > 0) {
+                            criteriaScores[idx] = calculateAdjustedAverage(criterionScores);
+                        }
+                    });
+                    
+                    perfScore = criteriaScores[0] !== null ? criteriaScores[0].toFixed(2) : '';
+                    techScore = criteriaScores[1] !== null ? criteriaScores[1].toFixed(2) : '';
+                    chorScore = criteriaScores[2] !== null ? criteriaScores[2].toFixed(2) : '';
+                    creaScore = criteriaScores[3] !== null ? criteriaScores[3].toFixed(2) : '';
+                    presScore = criteriaScores[4] !== null ? criteriaScores[4].toFixed(2) : '';
+                } else {
+                    finalScore = calculateAdjustedAverage(scoresArray.map(s => typeof s === 'object' ? s.total : s));
+                    perfScore = 'N/A';
+                    techScore = 'N/A';
+                    chorScore = 'N/A';
+                    creaScore = 'N/A';
+                    presScore = 'N/A';
+                }
+
+                csv += `${categoryNames[division]},${group},${finalScore.toFixed(2)},${perfScore},${techScore},${chorScore},${creaScore},${presScore},${scoresArray.length}\n`;
+            }
+
+            // Agregar hoja detallada con puntajes por jurado
+            csv += '\n\n--- DETALLE POR JURADO Y CRITERIO ---\n';
+            csv += 'Categoría,Grupo,Jurado,Performance,Técnica,Coreografía,Creatividad,Presentación,Total\n';
+
+            for (const key in allScores) {
+                const [division, group] = key.split('_');
+                const scores = allScores[key];
+                
+                Object.entries(scores).forEach(([judge, data]) => {
+                    if (typeof data === 'object') {
+                        csv += `${categoryNames[division]},${group},${judge.replace('judge', 'Jurado ')},${data.performance.toFixed(2)},${data.technique.toFixed(2)},${data.choreography.toFixed(2)},${data.creativity.toFixed(2)},${data.presentation.toFixed(2)},${data.total.toFixed(2)}\n`;
+                    } else {
+                        csv += `${categoryNames[division]},${group},${judge.replace('judge', 'Jurado ')},N/A,N/A,N/A,N/A,N/A,${data.toFixed(2)}\n`;
+                    }
+                });
+            }
+
+            // Descargar archivo
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `resultados_topflow_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showAdminAlert('✅ Archivo CSV descargado exitosamente con detalles por criterio', 'success');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ ¿Está seguro de que desea eliminar TODOS los datos? Esta acción no se puede deshacer.')) {
+                if (confirm('Esta es su última oportunidad. ¿Realmente desea continuar?')) {
+                    allScores = {};
+                    saveScoresToStorage();
+                    renderAdminResults();
+                    showAdminAlert('🗑️ Todos los datos han sido eliminados', 'success');
+                }
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            const alertClass = type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : 'alert-info';
+            const icon = type === 'error' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
+            
+            alertBox.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <i class="fas ${icon}"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            setTimeout(() => alertBox.innerHTML = '', 5000);
+        }
+
+        function showAdminAlert(message, type) {
+            const alertBox = document.getElementById('adminAlertBox');
+            const alertClass = type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : 'alert-info';
+            const icon = type === 'error' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
+            
+            alertBox.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <i class="fas ${icon}"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            setTimeout(() => alertBox.innerHTML = '', 5000);
+        }
+
+        function saveScoresToStorage() {
+            const data = JSON.stringify(allScores);
+            localStorage.setItem('topFlowScores', data);
+        }
+
+        function loadScoresFromStorage() {
+            const data = localStorage.getItem('topFlowScores');
+            if (data) {
+                allScores = JSON.parse(data);
+            }
+        }
+
+        calculateTotals();
+    </script>
+</body>
+</html>
